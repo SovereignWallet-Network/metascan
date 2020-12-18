@@ -11,16 +11,16 @@ services:
     command: ./start.sh
     environment:
       - PYTHONPATH=/usr/src/app
-      - ENVIRONMENT=prod
+      - ENVIRONMENT=dev
       - DB_HOST=mysql
       - DB_PORT=3306
       - DB_USERNAME=root
       - DB_PASSWORD=root
-      - DB_NAME=polkascan
-      - SUBSTRATE_RPC_URL=http://host.docker.internal:9933/
+      - DB_NAME=metascan
+      - SUBSTRATE_RPC_URL=http://ec2-52-76-185-53.ap-southeast-1.compute.amazonaws.com:9933/
+      - TYPE_REGISTRY_FILE=app/type_registry/metablockchain_types.json
       - SUBSTRATE_ADDRESS_TYPE=42
-      - TYPE_REGISTRY_FILE=app/type_registry/substrate-node-template.json
-      - SUBSTRATE_METADATA_VERSION=9
+      - SUBSTRATE_METADATA_VERSION=12
     depends_on:
       - mysql
 
@@ -28,8 +28,6 @@ services:
     build: harvester/.
     image: polkascan/pre-harvester:latest
     hostname: harvester-api
-    ports:
-      - '8001:8000'
     volumes:
       - './harvester:/usr/src/app'
     command: ./start.sh
@@ -42,14 +40,12 @@ services:
       - DB_PORT=3306
       - DB_USERNAME=root
       - DB_PASSWORD=root
-      - DB_NAME=polkascan
-      - SUBSTRATE_RPC_URL=http://host.docker.internal:9933/
-      - TYPE_REGISTRY_FILE=app/type_registry/substrate-node-template.json
+      - DB_NAME=metascan
+      - SUBSTRATE_RPC_URL=http://ec2-52-76-185-53.ap-southeast-1.compute.amazonaws.com:9933/
+      - TYPE_REGISTRY_FILE=app/type_registry/metablockchain_types.json
       - SUBSTRATE_ADDRESS_TYPE=42
-      - SUBSTRATE_METADATA_VERSION=9
+      - SUBSTRATE_METADATA_VERSION=12
       - NEW_SESSION_EVENT_HANDLER=True
-      - SUBSTRATE_STORAGE_BALANCE=Account
-      - SUBSTRATE_STORAGE_INDICES=Accounts
     depends_on:
       - redis
       - mysql
@@ -98,20 +94,20 @@ services:
       - '33061:3306'
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=polkascan
+      - MYSQL_DATABASE=metascan
 
   explorer-gui:
     image: polkascan/pre-explorer-gui:latest
     build:
       context: explorer-gui/.
       args:
-        NETWORK_NAME: Substrate Node Template
-        NETWORK_ID: node-template
+        NETWORK_NAME: Metablockchain
+        NETWORK_ID: dev
         NETWORK_TYPE: pre
-        CHAIN_TYPE: para
-        NETWORK_TOKEN_SYMBOL: DEV
-        NETWORK_TOKEN_DECIMALS: 15
-        NETWORK_COLOR_CODE: 777777
+        CHAIN_TYPE: relay
+        NETWORK_TOKEN_SYMBOL: MUI
+        NETWORK_TOKEN_DECIMALS: 6
+        NETWORK_COLOR_CODE: d32e79
         API_URL: http://127.0.0.1:8080/api/v1
     ports:
       - '8080:80'
