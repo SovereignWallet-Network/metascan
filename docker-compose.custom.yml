@@ -12,18 +12,18 @@ services:
     environment:
       - PYTHONPATH=/usr/src/app
       - ENVIRONMENT=prod
-      - DB_HOST=mysql
+      - DB_HOST=host.docker.internal
       - DB_PORT=3306
       - DB_USERNAME=root
-      - DB_PASSWORD=root
+      - DB_PASSWORD=Pasha111
       - DB_NAME=polkascan
-      - SUBSTRATE_RPC_URL=http://substrate-node:9933/
+      - SUBSTRATE_RPC_URL=http://host.docker.internal:9933/
       - SUBSTRATE_ADDRESS_TYPE=42
       - TYPE_REGISTRY_FILE=app/type_registry/custom_types.json
-      - SUBSTRATE_METADATA_VERSION=9
-    depends_on:
-      - mysql
-      - substrate-node
+      - SUBSTRATE_METADATA_VERSION=12
+    # depends_on:
+    #   - mysql
+      # - substrate-node
 
   harvester-api:
     build: harvester/.
@@ -37,22 +37,23 @@ services:
       - CELERY_BACKEND=redis://redis:6379/0
       - PYTHONPATH=/usr/src/app:/usr/src/app/py-substrate-interface/:/usr/src/app/py-scale-codec/
       - ENVIRONMENT=prod
-      - DB_HOST=mysql
+      - DB_HOST=host.docker.internal
       - DB_PORT=3306
       - DB_USERNAME=root
-      - DB_PASSWORD=root
+      - DB_PASSWORD=Pasha111
       - DB_NAME=polkascan
-      - SUBSTRATE_RPC_URL=http://substrate-node:9933/
+      - SUBSTRATE_RPC_URL=http://host.docker.internal:9933/
       - TYPE_REGISTRY_FILE=app/type_registry/custom_types.json
       - SUBSTRATE_ADDRESS_TYPE=42
-      - SUBSTRATE_METADATA_VERSION=9
+      - SUBSTRATE_METADATA_VERSION=12
       - NEW_SESSION_EVENT_HANDLER=True
       - SUBSTRATE_STORAGE_BALANCE=Account
       - SUBSTRATE_STORAGE_INDICES=Accounts
+      - FINALIZATION_ONLY=1
     depends_on:
       - redis
-      - mysql
-      - substrate-node
+      # - mysql
+      # - substrate-node
 
   harvester-worker:
     build: harvester/.
@@ -63,7 +64,7 @@ services:
     environment: *env
     depends_on:
       - redis
-      - mysql
+      # - mysql
 
   harvester-beat:
     build: harvester/.
@@ -71,7 +72,7 @@ services:
     volumes:
       - './harvester:/usr/src/app'
       - '/usr/src/app/data'
-    command: celery -A app.tasks beat --loglevel=INFO  --schedule="data/celerybeat-schedule" --pidfile="data/celerybeat.pid"
+    command: celery -A app.tasks beat --loglevel=INFO  --schedule="data/celerybeat-schedule" --pidfile=""
     environment: *env
     depends_on:
       - redis
@@ -89,39 +90,39 @@ services:
     image: redis:3.2.11
     hostname: redis
 
-  mysql:
-    image: mysql:latest
-    hostname: mysql
-    volumes:
-      - 'db-data:/var/lib/mysql'
-    ports:
-      - '33061:3306'
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=polkascan
+  # mysql:
+  #   image: mysql:latest
+  #   hostname: mysql
+  #   volumes:
+  #     - 'db-data:/var/lib/mysql'
+  #   ports:
+  #     - '33061:3306'
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=root
+  #     - MYSQL_DATABASE=polkascan
 
-  substrate-node:
-    image: polkasource/substrate-client:kusama-latest
-    hostname: substrate-node
-    volumes:
-      - 'substrate-data:/data'
-    ports:
-      - '30333:30333'
-      - '9933:9933'
-      - '9944:9944'
-    command: --dev --db-cache=2048 --wasm-execution=Compiled --rpc-external --rpc-cors=all --ws-external --rpc-methods=Unsafe --pruning=archive
+  # substrate-node:
+  #   image: polkasource/substrate-client:kusama-latest
+  #   hostname: substrate-node
+  #   volumes:
+  #     - 'substrate-data:/data'
+  #   ports:
+  #     - '30333:30333'
+  #     - '9933:9933'
+  #     - '9944:9944'
+  #   command: --dev --db-cache=2048 --wasm-execution=Compiled --rpc-external --rpc-cors=all --ws-external --rpc-methods=Unsafe --pruning=archive
 
   explorer-gui:
     image: polkascan/pre-explorer-gui:latest
     build:
       context: explorer-gui/.
       args:
-        NETWORK_NAME: Kusama Dev
+        NETWORK_NAME: Metablockchain
         NETWORK_ID: custom
         NETWORK_TYPE: pre
         CHAIN_TYPE: relay
-        NETWORK_TOKEN_SYMBOL: DEV
-        NETWORK_TOKEN_DECIMALS: 12
+        NETWORK_TOKEN_SYMBOL: MUI
+        NETWORK_TOKEN_DECIMALS: 6
         NETWORK_COLOR_CODE: 777777
         API_URL: http://127.0.0.1:8080/api/v1
     ports:
@@ -135,6 +136,6 @@ services:
     ports:
       - '8081:80'
 
-volumes:
-  db-data:
-  substrate-data:
+# volumes:
+  # db-data:
+  # substrate-data:
