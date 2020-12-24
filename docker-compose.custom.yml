@@ -12,17 +12,17 @@ services:
     environment:
       - PYTHONPATH=/usr/src/app
       - ENVIRONMENT=prod
-      - DB_HOST=host.docker.internal
+      - DB_HOST=mysql
       - DB_PORT=3306
       - DB_USERNAME=root
-      - DB_PASSWORD=Pasha111
+      - DB_PASSWORD=root
       - DB_NAME=polkascan
-      - SUBSTRATE_RPC_URL=http://host.docker.internal:9933/
+      - SUBSTRATE_RPC_URL=http://ec2-52-76-185-53.ap-southeast-1.compute.amazonaws.com:9933
       - SUBSTRATE_ADDRESS_TYPE=42
-      - TYPE_REGISTRY_FILE=app/type_registry/custom_types.json
+      - TYPE_REGISTRY_FILE=app/type_registry/metablockchain_types.json
       - SUBSTRATE_METADATA_VERSION=12
-    # depends_on:
-    #   - mysql
+    depends_on:
+      - mysql
       # - substrate-node
 
   harvester-api:
@@ -37,22 +37,22 @@ services:
       - CELERY_BACKEND=redis://redis:6379/0
       - PYTHONPATH=/usr/src/app:/usr/src/app/py-substrate-interface/:/usr/src/app/py-scale-codec/
       - ENVIRONMENT=prod
-      - DB_HOST=host.docker.internal
+      - DB_HOST=mysql
       - DB_PORT=3306
       - DB_USERNAME=root
-      - DB_PASSWORD=Pasha111
+      - DB_PASSWORD=root
       - DB_NAME=polkascan
-      - SUBSTRATE_RPC_URL=http://host.docker.internal:9933/
-      - TYPE_REGISTRY_FILE=app/type_registry/custom_types.json
+      - SUBSTRATE_RPC_URL=http://ec2-52-76-185-53.ap-southeast-1.compute.amazonaws.com:9933
+      - TYPE_REGISTRY_FILE=app/type_registry/metablockchain_types.json
       - SUBSTRATE_ADDRESS_TYPE=42
       - SUBSTRATE_METADATA_VERSION=12
       - NEW_SESSION_EVENT_HANDLER=True
-      - SUBSTRATE_STORAGE_BALANCE=Account
+      - SUBSTRATE_STORAGE_BALANCE=Did.Account
       - SUBSTRATE_STORAGE_INDICES=Accounts
       - FINALIZATION_ONLY=1
     depends_on:
       - redis
-      # - mysql
+      - mysql
       # - substrate-node
 
   harvester-worker:
@@ -64,7 +64,7 @@ services:
     environment: *env
     depends_on:
       - redis
-      # - mysql
+      - mysql
 
   harvester-beat:
     build: harvester/.
@@ -90,16 +90,18 @@ services:
     image: redis:3.2.11
     hostname: redis
 
-  # mysql:
-  #   image: mysql:latest
-  #   hostname: mysql
-  #   volumes:
-  #     - 'db-data:/var/lib/mysql'
-  #   ports:
-  #     - '33061:3306'
-  #   environment:
-  #     - MYSQL_ROOT_PASSWORD=root
-  #     - MYSQL_DATABASE=polkascan
+  mysql:
+    image: mysql:latest
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
+    hostname: mysql
+    volumes:
+      - 'db-data:/var/lib/mysql'
+    ports:
+      - '33061:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=polkascan
 
   # substrate-node:
   #   image: polkasource/substrate-client:kusama-latest
@@ -118,15 +120,15 @@ services:
       context: explorer-gui/.
       args:
         NETWORK_NAME: Metablockchain
-        NETWORK_ID: custom
+        NETWORK_ID: testnet
         NETWORK_TYPE: pre
         CHAIN_TYPE: relay
         NETWORK_TOKEN_SYMBOL: MUI
         NETWORK_TOKEN_DECIMALS: 6
         NETWORK_COLOR_CODE: 777777
-        API_URL: http://127.0.0.1:8080/api/v1
+        API_URL: http://127.0.0.1:80/api/v1
     ports:
-      - '8080:80'
+      - '80:80'
     depends_on:
       - harvester-api
       - explorer-api
@@ -136,6 +138,6 @@ services:
     ports:
       - '8081:80'
 
-# volumes:
-  # db-data:
+volumes:
+  db-data:
   # substrate-data:
