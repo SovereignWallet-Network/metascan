@@ -4,10 +4,10 @@ Blockchain explorer for Metablockchain
 ## Quick Deploymenent 
 Uses container for Mysql & connects to hosted node of metablockchain
 
-# Polkascan Open-Source
-Polkascan Open-Source Application
+## Requirements:
+1. Git
+2. Docker engine & Docker compose
 
-## Deployment (Use System MySQL)
 ### Step 1: Clone repository: 
 ```bash
 git clone https://github.com/SovereignWallet-Network/metascan.git
@@ -23,15 +23,16 @@ git submodule update --init --recursive
 ### Step 4: Make sure that the mysql server is running & is configured correctly in the  `docker-compose.custom.yml` & .env files
 
 ### Step 5: Make sure that the RPC URL is configured correctly
+
 ### Step 6: Then build the other docker containers
 ```bash
 env $(cat <env-file>) docker-compose -p metablockchain -f docker-compose.custom.yml up --build
 ```
+
 ## Links to applications
 * Metascan Explorer GUI: http://127.0.0.1:8080
 * Monitor harvester progress: http://127.0.0.1:8080/metablockchain/harvester/admin
 * Harvester Task Monitor: http://127.0.0.1:5555
-* Polkadot JS Apps: http://127.0.0.1:8081
 
 ## Add new types for blockchain
 
