@@ -36,12 +36,12 @@ services:
       - CELERY_BACKEND=redis://redis:6379/0
       - PYTHONPATH=/usr/src/app:/usr/src/app/py-substrate-interface/:/usr/src/app/py-scale-codec/
       - ENVIRONMENT=prod
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_USERNAME=root
-      - DB_PASSWORD=root
-      - DB_NAME=polkascan
-      - SUBSTRATE_RPC_URL=http://ec2-52-76-185-53.ap-southeast-1.compute.amazonaws.com:9933
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - SUBSTRATE_RPC_URL=${SUBSTRATE_RPC_URL}
       - TYPE_REGISTRY_FILE=app/type_registry/metablockchain_types.json
       - SUBSTRATE_ADDRESS_TYPE=42
       - SUBSTRATE_METADATA_VERSION=12
@@ -96,10 +96,10 @@ services:
     volumes:
       - 'db-data:/var/lib/mysql'
     ports:
-      - '33061:3306'
+      - ${DB_PORT}:${DB_PORT}
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=polkascan
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
 
   explorer-gui:
     image: polkascan/pre-explorer-gui:latest
@@ -107,10 +107,10 @@ services:
       context: explorer-gui/.
       args:
         NETWORK_NAME: Metablockchain
-        NETWORK_ID: testnet
+        NETWORK_ID: ${NETWORK_ID}
         NETWORK_TYPE: pre
         CHAIN_TYPE: relay
-        NETWORK_TOKEN_SYMBOL: MUI
+        NETWORK_TOKEN_SYMBOL: MetaMUI
         NETWORK_TOKEN_DECIMALS: 6
         NETWORK_COLOR_CODE: 777777
         API_URL: ${EXPLORER_API_URL}
