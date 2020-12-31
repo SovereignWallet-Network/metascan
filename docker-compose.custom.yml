@@ -12,18 +12,17 @@ services:
     environment:
       - PYTHONPATH=/usr/src/app
       - ENVIRONMENT=prod
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_USERNAME=root
-      - DB_PASSWORD=root
-      - DB_NAME=polkascan
-      - SUBSTRATE_RPC_URL=http://ec2-52-76-185-53.ap-southeast-1.compute.amazonaws.com:9933
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - SUBSTRATE_RPC_URL=${SUBSTRATE_RPC_URL}
       - SUBSTRATE_ADDRESS_TYPE=42
       - TYPE_REGISTRY_FILE=app/type_registry/metablockchain_types.json
       - SUBSTRATE_METADATA_VERSION=12
     depends_on:
       - mysql
-      # - substrate-node
 
   harvester-api:
     build: harvester/.
@@ -53,7 +52,6 @@ services:
     depends_on:
       - redis
       - mysql
-      # - substrate-node
 
   harvester-worker:
     build: harvester/.
@@ -103,17 +101,6 @@ services:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=polkascan
 
-  # substrate-node:
-  #   image: polkasource/substrate-client:kusama-latest
-  #   hostname: substrate-node
-  #   volumes:
-  #     - 'substrate-data:/data'
-  #   ports:
-  #     - '30333:30333'
-  #     - '9933:9933'
-  #     - '9944:9944'
-  #   command: --dev --db-cache=2048 --wasm-execution=Compiled --rpc-external --rpc-cors=all --ws-external --rpc-methods=Unsafe --pruning=archive
-
   explorer-gui:
     image: polkascan/pre-explorer-gui:latest
     build:
@@ -126,18 +113,12 @@ services:
         NETWORK_TOKEN_SYMBOL: MUI
         NETWORK_TOKEN_DECIMALS: 6
         NETWORK_COLOR_CODE: 777777
-        API_URL: http://127.0.0.1:80/api/v1
+        API_URL: ${EXPLORER_API_URL}
     ports:
       - '80:80'
     depends_on:
       - harvester-api
       - explorer-api
 
-  polkadot-ui:
-    image: polkasource/substrate-ui:polkadot-latest
-    ports:
-      - '8081:80'
-
 volumes:
   db-data:
-  # substrate-data:

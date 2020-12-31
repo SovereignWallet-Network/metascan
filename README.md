@@ -24,7 +24,12 @@ git submodule update --init --recursive
 ```
 ### Step 6: Then build the other docker containers
 ```bash
-docker-compose -p kusama -f docker-compose.kusama-quick.yml up --build
+docker-compose -p kusama -f docker-compose.kusama-quick.yml up --build --env-file <env-filename>
+```
+for old version of docker-compose
+
+```bash
+env $(cat .env.dev) docker-compose -p metablockchain -f docker-compose.custom.yml up --build
 ```
 
 ## Use public Substrate RPC endpoints
