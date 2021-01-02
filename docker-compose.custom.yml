@@ -114,6 +114,7 @@ services:
         NETWORK_TOKEN_DECIMALS: 6
         NETWORK_COLOR_CODE: 777777
         API_URL: ${EXPLORER_API_URL}
+        SDK_API_URL: ${SDK_API_URL}
     ports:
       - '80:80'
     depends_on:
