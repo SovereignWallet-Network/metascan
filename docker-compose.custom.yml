@@ -96,7 +96,7 @@ services:
     volumes:
       - 'db-data:/var/lib/mysql'
     ports:
-      - ${DB_PORT}:${DB_PORT}
+      - ${DOCKER_DB_PORT}:${DB_PORT}
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_NAME}
