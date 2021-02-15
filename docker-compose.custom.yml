@@ -116,7 +116,8 @@ services:
         API_URL: ${EXPLORER_API_URL}
         SDK_API_URL: ${SDK_API_URL}
     ports:
-      - '80:80'
+    # We will use nginx proxy to route API & explorer requests
+      - '8080:80'
     depends_on:
       - harvester-api
       - explorer-api
